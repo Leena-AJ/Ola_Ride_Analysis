@@ -52,6 +52,17 @@ if page == "Overview":
     LIMIT 1
     """).iloc[0,0]
 
+    Peak_Booking_Hour= execute_query("""
+    SELECT HOUR(STR_TO_DATE(Time,'%H:%i:%s')) AS Peak_Hour,
+    COUNT(*) AS Total_Rides
+    FROM Ola_dataset
+    GROUP BY Peak_Hour
+    ORDER BY Total_Rides DESC
+    LIMIT 1
+    """).iloc[0,0]
+
+
+
 
     col1, col2, col3 = st.columns(3)
 
@@ -60,6 +71,7 @@ if page == "Overview":
     col3.metric("INCOMPLETE RIDES ",f"{int(INCOMPLETE_RIDES):,}")
 
     st.info(f"MOST BOOKED VEHICLE TYPE: {MOST_BOOKED_VEHICLE_TYPE}")
+    st.info(f"Peak Booking Hour: {Peak_Booking_Hour}")
 
 elif page == "Insights":
 
@@ -80,10 +92,9 @@ elif page == "Insights":
     """,
 
     "Total number of cancelled rides by customers": """
-    select Canceled_Rides_by_Customer,count(*)
-    from Ola_dataset
-    where Canceled_Rides_by_Customer != 'Not Cancelled By Customer'
-    group by Canceled_Rides_by_Customer;
+    SELECT count(*) as Total_Cancelled_Rides 
+    FROM Ola_dataset
+    WHERE Booking_Status = 'Canceled by Customer';
     """,
 
     "Top 5 customers who booked the highest number of rides": """
@@ -98,14 +109,14 @@ elif page == "Insights":
     select Canceled_Rides_by_Driver,count(*) as No_of_rides
     from Ola_dataset
     where Canceled_Rides_by_Driver = 'Personal & Car related issue'                  
-    Group By Canceled_Rides_by_Driver
     ; 
     """,
 
     "The maximum and minimum driver ratings for Prime Sedan bookings": """
     select Vehicle_Type,max(Driver_Ratings) as Max_rating,min(Driver_Ratings) as Min_rating
     from Ola_dataset
-    where Vehicle_Type= 'Prime Sedan' ;
+    where Vehicle_Type= 'Prime Sedan'
+    and Driver_Ratings > 0  ;
     """,
 
     "All rides where payment was made using UPI": """
@@ -119,6 +130,7 @@ elif page == "Insights":
     "The average customer rating per vehicle type": """
     select Vehicle_Type,round(avg(Customer_Rating),2) as avg_rating
     from Ola_dataset
+    where Customer_Rating > 0                   
     group by Vehicle_Type
     order by avg_rating desc                                    
     ; 
@@ -163,13 +175,13 @@ elif page == "Insights":
                 st.info("About 6k rides have been cancelled by drivers for personal and car related")
 
             elif selected_query =="The maximum and minimum driver ratings for Prime Sedan bookings":
-                st.info("Drivers have given maximum of 5 for this particular booking")
+                st.info("Drivers have given maximum of 5 and minimum of 3 for this particular booking")
 
             elif selected_query =="All rides where payment was made using UPI":
                 st.info("Out of total bookings,25881 payments are made by UPI")
 
             elif selected_query =="The average customer rating per vehicle type":
-                st.info("Out of all ,Prime Sedan has been rated highest and Prime SUV has scored least rating")
+                st.info("Bike and ebike has scored least rating")
 
             elif selected_query =="Total booking value of rides completed successfully":
                 st.info("3,50,80,467 is the total value for all the completed rides")  
