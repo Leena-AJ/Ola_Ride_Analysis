@@ -1,5 +1,4 @@
 import streamlit as st
-import streamlit.components.v1 as components
 import pandas as pd
 import pymysql
 
@@ -61,7 +60,14 @@ if page == "Overview":
     LIMIT 1
     """).iloc[0,0]
 
-
+    High_Revenue_vehicle= execute_query("""
+    SELECT Vehicle_Type,
+    SUM(Booking_Value) AS Revenue
+    FROM Ola_dataset
+    GROUP BY Vehicle_Type
+    ORDER BY Revenue Desc
+    limit 1 ;
+    """).iloc[0,0]
 
 
     col1, col2, col3 = st.columns(3)
@@ -71,7 +77,8 @@ if page == "Overview":
     col3.metric("INCOMPLETE RIDES ",f"{int(INCOMPLETE_RIDES):,}")
 
     st.info(f"MOST BOOKED VEHICLE TYPE: {MOST_BOOKED_VEHICLE_TYPE}")
-    st.info(f"Peak Booking Hour: {Peak_Booking_Hour}")
+    st.info(f"High Revenue vehicle: {High_Revenue_vehicle}")
+    st.info(f"Peak Booking Hour: {Peak_Booking_Hour}:00 PM")
 
 elif page == "Insights":
 
@@ -159,13 +166,13 @@ elif page == "Insights":
             df = execute_query(queries[selected_query])
             st.success("Query executed successfully")
 
-            if selected_query =="All Successfull Bookings":
+            if selected_query =="Successfull Bookings":
                 st.info("Out of total bookings,63967 are successfull")
 
-            elif selected_query ==" Average ride distance for each vehicle type":
+            elif selected_query =="Average ride distance for each vehicle type":
                 st.info("Among the six vehicles,Prime sedan has covered more distance and Auto has covered the least")
 
-            elif selected_query ==" Total number of cancelled rides by customers":
+            elif selected_query =="Total number of cancelled rides by customers":
                 st.info("Out of 13024 bookings,10499 rides have been cancelled by the customers")
 
             elif selected_query =="Top 5 customers who booked the highest number of rides":
@@ -175,7 +182,7 @@ elif page == "Insights":
                 st.info("About 6k rides have been cancelled by drivers for personal and car related")
 
             elif selected_query =="The maximum and minimum driver ratings for Prime Sedan bookings":
-                st.info("Drivers have given maximum of 5 and minimum of 3 for this particular booking")
+                st.info("Drivers have given maximum of 5 and minimum of 3 for this particular vehicle")
 
             elif selected_query =="All rides where payment was made using UPI":
                 st.info("Out of total bookings,25881 payments are made by UPI")
@@ -191,9 +198,4 @@ elif page == "Insights":
 
             st.dataframe(df)      
 
-            st.subheader("Power BI Dashboard")
-
-            st.link_button(
-            "Open Power BI Dashboard",
-            "https://app.powerbi.com/reportEmbed?reportId=61bafb81-2b94-4448-81f1-d22ab7dabc5a&autoAuth=true&ctid=220a3f1b-1bd1-4767-895e-a92a6ffb9530",
-            )
+            
