@@ -8,7 +8,7 @@ The rise of ride-sharing platforms has transformed urban mobility, offering conv
 Identify peak demand hours and optimize driver allocation.
 Analyze customer behavior for personalized marketing strategies.
 Understanding pricing patterns and surge pricing effectiveness.
-Detecting anomalies or fraudulent activities in ride data.
+
 
 🛠 Tools 
 1.Python
